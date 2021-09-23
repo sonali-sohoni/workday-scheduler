@@ -50,7 +50,7 @@ function buildTasksHtml() {
 		btn3.html("<i class='fas fa-save'></i>");
 
 		divRow.append(div1, div2, btn3);
-		console.log(divRow);
+		//console.log(divRow);
 		$(".container").append(divRow);
 	}
 	$(".btn-save").on("click", function (event) {
@@ -58,9 +58,21 @@ function buildTasksHtml() {
 		console.log(t);
 		var text = t.val().trim();
 		var taskid = $(t).attr("data-hr-slot");
-		console.log(taskid);
-		console.log(text);
+		var div2 = $("<div>").addClass("col-md-10 pt-3 task-description");
+		div2.attr("data-hr-slot", "tasks" + timeIndex);
+		div2.html(text);
+		t.replaceWith(div2);
 		saveTasks(taskid, text);
+	});
+	$(".task-description").on("click", function (event) {
+		var taskdesc = $(this).html();
+		var txtarea2 = $("<textarea>").addClass(
+			"form-control col-md-10 txt-task-description"
+		);
+		var taskid = $(this).attr("data-hr-slot");
+		txtarea2.attr("data-hr-slot", taskid);
+		txtarea2.val(taskdesc);
+		$(this).replaceWith(txtarea2);
 	});
 }
 

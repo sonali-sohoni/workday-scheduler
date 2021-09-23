@@ -4,5 +4,11 @@
 	box-sizing: border-box;
 }
 
-.hrclass {
+.hours {
+	height: 60px;
+}
+
+.task-description{
+  vertical-align: center;
+  
 }

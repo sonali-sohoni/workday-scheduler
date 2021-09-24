@@ -5,10 +5,17 @@
 }
 
 .hours {
-	height: 60px;
+	height: 70px;
 }
 
-.task-description{
-  vertical-align: center;
-  
+.task-description {
+	vertical-align: center;
+}
+
+.jumbotron {
+	font-family: "Roboto", sans-serif;
+	text-align: center;
+}
+footer {
+	height: 100px;
 }

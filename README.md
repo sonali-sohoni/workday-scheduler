@@ -1,5 +1,5 @@
 # workday-scheduler
-# JavaScript Timebased Quiz
+
 
 ## mockup
 * GIVEN I am using a daily planner to create a schedule
@@ -10,6 +10,7 @@
 * WHEN I click the save button for that timeblock THEN the text for that event is saved in local storage
 * WHEN I refresh the page THEN the saved events persist
 * User also has option to go back and start the game again or clear the previous scores.
+* Additional  - Project also display current time slot as well as tasks due soon.
 
 ## Objectives
 * Understand and implement basic concepts of JS ,jQuery, Event delegations using jQuery,BootStap
@@ -27,13 +28,13 @@ https://sonali-sohoni.github.io/workday-scheduler/
 * Go to https://github.com/sonali-sohoni/workday-scheduler repository.
 * Click on code and select Clone or download zip file then unzip it.
 * Open the folder in the Visual Studio Code and run index.html in the browser.
-* click on the Start The Quiz button to get random questions.
+* Enter the tasks to schedule your day.
 * 
 ##Screenshots
-![startgame](https://user-images.githubusercontent.com/88642738/133945728-44a88bb2-f3c4-466c-bc61-a1e4533d1378.JPG)
-![img1](https://user-images.githubusercontent.com/88642738/133945741-f24c3568-4eda-4468-b8f4-231c12382f7b.JPG)
-![newhighscore](https://user-images.githubusercontent.com/88642738/133946660-c058f0df-efd6-4535-a3b6-e08a989ebab4.JPG)
-![timeover](https://user-images.githubusercontent.com/88642738/133945750-a5d7bee6-5e0d-40f3-a833-f080843f241f.JPG)
+![wday1](https://user-images.githubusercontent.com/88642738/134828490-0712376f-e91f-4994-9bdb-7ec98a25f54a.png)
+![w2](https://user-images.githubusercontent.com/88642738/134828492-ab54c2a2-3221-4369-8228-0a088f734be4.png)
+![wday3](https://user-images.githubusercontent.com/88642738/134828488-44c32da4-6afc-464f-8514-f7a6304d1448.JPG)
+
 
 
 

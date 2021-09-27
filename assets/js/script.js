@@ -56,7 +56,8 @@ function buildTasksHtml() {
 		//console.log(divRow);
 		$(".container").append(divRow);
 	}
-	$(".btn-save").on("click", function (event) {
+	//$(".btn-save").on("click", function (event) {
+	$(".container").on("click", ".btn-save", function (event) {
 		var t = $(this).prev();
 		console.log(t);
 		var text = t.val().trim();
@@ -68,10 +69,12 @@ function buildTasksHtml() {
 		saveTasks(taskid, text);
 		auditTask();
 	});
-	$(".task-description").on("click", function (event) {
+	$(".container").on("click", ".task-description", function (event) {
+		console.log(event);
 		if ($(this).attr("class").indexOf("bg-secondary") > -1) {
 			return false;
 		}
+		console.log($(this));
 		var taskdesc = $(this).html();
 		var txtarea2 = $("<textarea>").addClass(
 			"form-control col-md-10 txt-task-description"
@@ -98,7 +101,7 @@ function pageSetup() {
 setInterval(function () {
 	auditTask();
 	console.log;
-}, 1000 * 60);
+}, 1000 * 120);
 
 function setDisplayDate() {
 	var displayDateStr = $("#currentDay").text();
@@ -128,11 +131,13 @@ function auditTask() {
 	var currentTime = moment();
 	var currentHour = moment().hour(); //	moment().hour() >= 13 ? moment().hour() - 12 :
 	//currentHour = currentHour === 0 ? 12 : currentHour;
+	console.log(" time now " + currentTime);
 	var passed12 = false;
 	$(".due-soon").remove();
 	$("#now").remove();
 
-	$(".container .hours .task-description, .txt-task-description").each(
+	$(".container .hours .task-description ,.txt-task-description").each(
+		//,
 		function (index) {
 			//console.log($(this));
 			$(this).removeClass("bg-secondary bg-warning bg-success");
@@ -173,8 +178,10 @@ function auditTask() {
 
 			if (t == currentHour) {
 				$(this).addClass("bg-success ");
+				console.log("green cell");
 				btn.removeAttr("disabled");
 				$(this).removeAttr("disabled");
+				$(this).prop("disabled", false);
 				var text = $(this).prev().html();
 				// $(this)
 				// 	.prev()
@@ -193,6 +200,7 @@ function auditTask() {
 				console.log($(this).next());
 				btn.attr("disabled", "disabled");
 				$(this).prop("disabled", true);
+				console.log("gray cell");
 			}
 			// if (currentTime.diff(endTime, "minutes") > -6000) {
 
@@ -200,15 +208,17 @@ function auditTask() {
 			else if (Math.abs(currentTime.diff(taskTime, "minutes")) < 120) {
 				$(this).addClass("bg-warning");
 				var text = $(this).prev().html();
-
+				$(this).removeAttr("disabled");
+				$(this).prop("disabled", false);
 				$(this)
 					.prev()
 					.html(
 						text +
 							"<span class='badge badge-pill badge-warning text-align-left due-soon'>Due Soon&nbsp; </span>"
 					);
+				console.log("orange cell");
 			}
-
+			console.log($(this).prop("disabled"));
 			// console.log(
 			// 	"abs difference taskTime= " +
 			// 		taskTime.format("hh:mm:ss") +

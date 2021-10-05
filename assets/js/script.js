@@ -36,6 +36,7 @@ function buildTasksHtml() {
 		div1.html(timeIndex + " " + ampm);
 
 		var taskdesc = tasks["tasks" + timeIndex];
+		if (!taskdesc) taskdesc = "";
 		var div2 = $("<div>").addClass("col-md-10 pt-3 task-description rounded");
 		div2.attr("data-hr-slot", "tasks" + timeIndex);
 		div2.html(taskdesc);
@@ -61,10 +62,11 @@ function buildTasksHtml() {
 		var text = t.val().trim();
 		var taskid = $(t).attr("data-hr-slot");
 		var div2 = $("<div>").addClass("col-md-10 pt-3 task-description");
-		div2.attr("data-hr-slot", "tasks" + timeIndex);
+		div2.attr("data-hr-slot", taskid);
 		div2.html(text);
 		t.replaceWith(div2);
 		saveTasks(taskid, text);
+		auditTask();
 	});
 	$(".task-description").on("click", function (event) {
 		if ($(this).attr("class").indexOf("bg-secondary") > -1) {
@@ -86,8 +88,9 @@ function buildTasksHtml() {
 	});
 }
 function pageSetup() {
-	var today = moment().format("dddd MMMM Do YYYY");
-	$("#currentDay").html(today);
+	// var today = moment().format("dddd MMMM Do YYYY");
+	// $("#currentDay").html(today);
+
 	buildTasksHtml();
 	auditTask();
 }
@@ -97,75 +100,123 @@ setInterval(function () {
 	console.log;
 }, 1000 * 60);
 
+function setDisplayDate() {
+	var displayDateStr = $("#currentDay").text();
+	displayDateStr += " 11:59:00";
+
+	var displayDate = moment(displayDateStr, "dddd MMMM Do YYYY hh:mm:ss");
+	var today = moment().format("dddd MMMM Do YYYY");
+	if (moment().isAfter(displayDate, "days")) {
+		$("#currentDay").html(today);
+		localStorage.removeItem("work-hr-tasks");
+		console.log(
+			moment().format("dddd MMMM Do YYYY hh:mm:ss") +
+				" " +
+				displayDate.format("dddd MMMM Do YYYY hh:mm:ss") +
+				" localstorage cleared. ****"
+		);
+		$(".container").empty();
+		buildTasksHtml();
+	} else {
+		$("#currentDay").html(today);
+	}
+	//remove old tasks
+}
+
 function auditTask() {
+	setDisplayDate();
 	var currentTime = moment();
-	var currentHour = moment().hour();
+	var currentHour = moment().hour(); //	moment().hour() >= 13 ? moment().hour() - 12 :
+	//currentHour = currentHour === 0 ? 12 : currentHour;
 	var passed12 = false;
 	$(".due-soon").remove();
 	$("#now").remove();
-	$(".container .hours .task-description").each(function (index) {
-		console.log($(this));
-		$(this).removeClass("bg-secondary bg-warning bg-success");
-		var t = $(this).attr("data-hr-slot").replace("tasks", "");
-		if (passed12) {
-			t = Number(t) + 12;
-		}
-		if (t == 12) passed12 = true;
 
-		var taskTime = moment().set({
-			hour: t,
-			minute: "00",
-			second: "00",
-		});
+	$(".container .hours .task-description, .txt-task-description").each(
+		function (index) {
+			//console.log($(this));
+			$(this).removeClass("bg-secondary bg-warning bg-success");
+			var t = $(this).attr("data-hr-slot").replace("tasks", "");
 
-		var btn = $(this).next();
-		btn.removeAttr("disabled");
-		$(this).removeAttr("disabled");
-		if (t == currentHour) {
-			$(this).addClass("bg-success ");
+			var format = "hh:mm:ss";
+			var taskTime = moment().set({
+				hour: t,
+				minute: "00",
+				second: "00",
+			}); //moment("8:00:00", format);
+			beforeTime = moment("7:59:00", format);
+			afterTime = moment("12:00:01", format);
+			if (taskTime.isBetween(beforeTime, afterTime)) {
+				console.log("is between");
+			} else {
+				t = Number(t) + 12;
+				taskTime = moment().set({
+					hour: t, //Number(t) + 12,
+					minute: "00",
+					second: "00",
+				});
+				console.log("is not between");
+			}
+
+			console.log("Task time = " + taskTime.format("hh:mm:ss"));
+
+			// if (passed12) {
+			// 	t = Number(t) + 12;
+			// }
+			// if (t == 12) passed12 = true;
+
+			// var
+
+			var btn = $(this).next();
 			btn.removeAttr("disabled");
 			$(this).removeAttr("disabled");
-			var text = $(this).prev().html();
-			// $(this)
-			// 	.prev()
-			// 	.html(
-			// 		text + "<a href='#' class='badge badge-success'>This Hour</a>"
-			// 	);
 
-			$(this)
-				.prev()
-				.html(
-					text +
-						"<span class='badge badge-pill badge-success text-align-left' id ='now'>Now&nbsp; </span>"
-				);
-		} else if (taskTime.isBefore(currentTime)) {
-			$(this).addClass("bg-secondary");
-			console.log($(this).next());
-			btn.attr("disabled", "disabled");
-			$(this).prop("disabled", true);
+			if (t == currentHour) {
+				$(this).addClass("bg-success ");
+				btn.removeAttr("disabled");
+				$(this).removeAttr("disabled");
+				var text = $(this).prev().html();
+				// $(this)
+				// 	.prev()
+				// 	.html(
+				// 		text + "<a href='#' class='badge badge-success'>This Hour</a>"
+				// 	);
+
+				$(this)
+					.prev()
+					.html(
+						text +
+							"<span class='badge badge-pill badge-success text-align-left' id ='now'>Now&nbsp; </span>"
+					);
+			} else if (taskTime.isBefore(currentTime)) {
+				$(this).addClass("bg-secondary");
+				console.log($(this).next());
+				btn.attr("disabled", "disabled");
+				$(this).prop("disabled", true);
+			}
+			// if (currentTime.diff(endTime, "minutes") > -6000) {
+
+			// }
+			else if (Math.abs(currentTime.diff(taskTime, "minutes")) < 120) {
+				$(this).addClass("bg-warning");
+				var text = $(this).prev().html();
+
+				$(this)
+					.prev()
+					.html(
+						text +
+							"<span class='badge badge-pill badge-warning text-align-left due-soon'>Due Soon&nbsp; </span>"
+					);
+			}
+
+			// console.log(
+			// 	"abs difference taskTime= " +
+			// 		taskTime.format("hh:mm:ss") +
+			// 		" " +
+			// 		Math.abs(moment().diff(taskTime, "minutes"))
+			// );
 		}
-		// if (currentTime.diff(endTime, "minutes") > -6000) {
-
-		// }
-		else if (Math.abs(moment().diff(taskTime, "minutes")) < 120) {
-			$(this).addClass("bg-warning");
-			var text = $(this).prev().html();
-
-			$(this)
-				.prev()
-				.html(
-					text +
-						"<span class='badge badge-pill badge-warning text-align-left due-soon'>Due Soon&nbsp; </span>"
-				);
-		}
-
-		console.log(
-			"abs difference taskTime= " +
-				taskTime.format("hh:mm:ss") +
-				" " +
-				Math.abs(moment().diff(taskTime, "minutes"))
-		);
-	});
+	);
 
 	// var hrs = currentTime.diff(endTime, "minutes");
 	//console.log(hrs);
